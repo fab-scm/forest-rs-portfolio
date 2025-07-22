@@ -10,6 +10,10 @@ const nextConfig = {
   },
   basePath: `/${repoName}`,
   assetPrefix: `/${repoName}/`,
+  // webpack(config) {
+  //   config.resolve.alias['@'] = join(__dirname, 'src'); // or '.' if no src/
+  //   return config;
+  // }
   // async headers() {
   //   return [
   //     {

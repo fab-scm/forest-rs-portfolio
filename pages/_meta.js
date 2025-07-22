@@ -1,4 +1,5 @@
 import { HomeIcon, BookOpenIcon } from "@heroicons/react/24/outline";
+import { Map } from "lucide-react";
 
 export default {
   index: {
@@ -16,7 +17,7 @@ export default {
   portfolio: {
     title: (
       <div className="flex items-center mr-2">
-        <BookOpenIcon className="h-5 w-5 mr-2" />
+        <Map className="h-5 w-5 mr-2" />
         <span className="text-base">Portfolio</span>
       </div>
     ),

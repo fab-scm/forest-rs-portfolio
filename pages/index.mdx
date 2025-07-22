@@ -1,3 +1,5 @@
+import { Map } from "lucide-react";
+
 ---
 title: Forest Remote Sensing - SS 2025
 ---
@@ -24,7 +26,7 @@ export default function IndexPage() {
           <span className="font-bold">Lecturer:</span> Dr. Johannes Stoffels{" "}
         </p>
         <p className="subtitle">
-          <Link className={styles.cta} href="/forest-rs-portfolio/portfolio/introduction">
+          <Link className={styles.cta} href="/portfolio/introduction">
             <span>Portfolio</span>
             <span className="flex items-center">
               <ArrowRightIcon className="h-4 w-4 ml-2" />
@@ -39,8 +41,8 @@ export default function IndexPage() {
               <div className="relative flex justify-around h-full w-full">
                 <div className="w-full h-full">
                   <Image
-                    src="/forest-rs-portfolio/satellite-imagery.jpg"
-                    alt="USGS Satellite Imagery"
+                    src="/forest-rs-portfolio/forest-drone-imagery.jpg"
+                    alt="Forest Drone Imagery by Fabio Comparelli on Unsplash"
                     className="relative object-cover w-full h-full rounded-3xl"
                     // fill={true}
                     priority={true}
@@ -49,7 +51,7 @@ export default function IndexPage() {
                   />
 
                   <div className="absolute bottom-4 right-4 bg-black/60 text-white px-3 py-1 rounded">
-                    | Photo by <Link href="https://unsplash.com/@usgs"><span className="hover:text-white/70 underline underline-offset-2">USGS</span></Link> on <Link href="https://unsplash.com/"><span className="hover:text-white/70 underline underline-offset-2">Unsplash</span></Link>
+                    | Photo by <Link href="https://unsplash.com/@intothefab"><span className="hover:text-white/70 underline underline-offset-2">Fabio Comparelli</span></Link> on <Link href="https://unsplash.com/"><span className="hover:text-white/70 underline underline-offset-2">Unsplash</span></Link>
                   </div>
                 </div>
               </div>

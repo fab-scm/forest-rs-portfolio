@@ -9,7 +9,15 @@ export default {
     </>
   ),
   project: {
-    link: "https://https://gitlab.uni-trier.de/fab-scm/forest-rs-portfolio",
+    link: "https://github.com/fab-scm/forest-rs-portfolio",
   },
+  color: {
+    hue: 130,
+    saturation: 50,
+    lightness: {
+      dark: 50,
+      light: 20
+    }
+  }
   // ... other theme options
 };

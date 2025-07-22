@@ -1,4 +1,6 @@
 export default {
   introduction: 'Introduction',
-  theory: 'Geovisualization Priciples'
+  maps: 'Documents and Maps',
+  reflection: 'Reflection/Conclusion',
+  references: 'References'
 }
