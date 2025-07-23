@@ -1,14 +1,14 @@
 ## Forest Remote Sensing SS 2025
-This repository holds all the code and content of my portfolio for the course 'Forest Remote Sensing' from the department for Geoinformatics at the University of Trier. You can find all the projects I have worked on during the WS 2024/25.
+This repository holds all the code and content of my portfolio for the course 'Forest Remote Sensing' from the department for Geoinformatics at the University of Trier. You can find all the map projects I have worked on during the SS 2025.
 
-Link to portfolio: [https://fab-scm.gitlab-pages.uni-trier.de/forest-rs-portfolio/]
+Link to portfolio: [https://fab-scm.github.io/forest-rs-portfolio]
 
 ### Start portfolio locally
 
 #### Clone repository
 
 ```bash
-git clone https://gitlab.uni-trier.de/fab-scm/forest-rs-portfolio.git
+git clone https://github.com/fab-scm/forest-rs-portfolio.git
 ```
 
 #### Enter folder
@@ -18,7 +18,7 @@ cd forest-rs-portfolio
 
 #### Install dependencies
 ```bash
-npm install
+npm ci
 ```
 
 #### Start portfolio on localhost:3000
