@@ -3,21 +3,25 @@ import { Steps } from 'nextra/components'
 
 # Forest Change Map
 
-This map visualizes forest change between 2021 and 2025 in the Hunsrück-Hochwald National Park. It compares the overall forest loss as well as the loss by forest type. The data layer used for creating this map are the ones resulting from the forest mask and forest type classification workflows shown in the previous steps of this portfolio.
+This maps visualize forest change between 2021 and 2025 in the Hunsrück-Hochwald National Park. They compares the overall forest loss as well as the loss by forest type and the transition that happened. The data layer used for creating this map are the ones resulting from the forest mask and forest type classification workflows shown in the previous steps of this portfolio.
 
 ## Workflow
 <Steps>
 ### Data input
    * Load forest masks for 2021 and 2025
    * Load forest type map for 2021 and 2025
-### Simple Change detection
+### Change detection
    * Subtract 2025 mask from 2021 mask
-   * Assign categorical labels: forest loss, no change, forest gain
-### Detailed Change detection by forest type
    * Subtract 2025 forest type map from 2021 forest type map
-   * Assign detailed labels: deciduous loss, coniferous loss, no change, deciduous gain, coniferous gain
+   * Assign change classes to resulting change maps
 </Steps>
 
 
-## Map
+## Simple Forest Change Map
 <FullScreenPDFViewer src="/forest-rs-portfolio/portfolio/02_docs_maps/05_forest_change/s6ffschu_task10_forest_change_map.pdf" />
+
+## Forest Change Map by transition type
+<FullScreenPDFViewer src="/forest-rs-portfolio/portfolio/02_docs_maps/05_forest_change/s6ffschu_task10_forest_change_map_transition.pdf" />
+
+## Forest Change Map by forest type
+<FullScreenPDFViewer src="/forest-rs-portfolio/portfolio/02_docs_maps/05_forest_change/s6ffschu_task10_forest_change_map_by_type.pdf" />
