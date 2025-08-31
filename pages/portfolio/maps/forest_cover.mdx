@@ -1,7 +1,35 @@
 import FullScreenPDFViewer from '@/components/FullScreenPDFViewer';
+import { Steps } from 'nextra/components'
 
 # Forest / Non-Forest Map
 
-<FullScreenPDFViewer src="/forest-rs-portfolio/portfolio/02_docs_maps/03_forest_cover/s6ffschu_task07_forest_mask_map.pdf" />
+For this map, I classified forest vs. non-forest areas with two different approaches and performed an agreement analysis between the two resulting classifcation layers. As the the CHM layer used for the threshold-based approach has a different survey data than the Sentinel-2 data used for the vegetation indices and the machine learning (ML) approach, this comparison also is not completely fair. However, it still gives a good indication of how well a simple threshold-based approach can perform compared to a more complex ML-based approach and shows how an aggreement analysis can be performed in general. Finally the ML-based approach was chosen as the baseline for the bi-annual change detection workflow in the last step together with the forest type map. Thus it was performed for both the 2021 and 2025 Sentinel-2 imagery. Here only the results for 2025 are shown.
 
-<FullScreenPDFViewer src="/forest-rs-portfolio/portfolio/02_docs_maps/03_forest_cover/s6ffschu_task07_forest_mask_comparison_map.pdf" />
+## **Workflow** 
+<Steps>
+### Threshold-based classification
+   * Load CHM, NDVI, and NDRE rasters.
+   * Apply thresholds (CHM ≥ 5 m, NDVI > 0.35, NDRE > 0.25) to classify forest vs. non-forest
+   * Smooth classification using a 3×3 focal filter to remove small pixel clusters
+   * Export smoothed forest mask
+### Machine learning-based classification
+   * Extract training data from Sentinel-2 predictors using sample polygons
+   * Train Random Forest model with spatial leave-one-fold-out cross-validation (3 folds)
+   * Assess variable importance and visualize results
+   * Predict forest vs. non-forest across the study area
+   * Accuracy assessment using stratified random samples and area-adjusted metrics (Olofsson et al., 2013, 2014)
+   * Postprocessing: Smooth the classification using focal filtering
+### Agreement analysis
+   * Compare smoothed value-based and Random Forest classifications
+   * Calculate overall agreement (%) and class confusion table
+   * Derive Jaccard similarity (intersection over union) for forest areas
+### Create map layout
+   * Visualize both forest masks and agreement results in a clear layout
+   * Add processing steps and accuracy assessment results
+</Steps>
+
+{/* ## Threshold-based Forest Mask
+<FullScreenPDFViewer src="/forest-rs-portfolio/portfolio/02_docs_maps/03_forest_cover/s6ffschu_task07_forest_mask_map.pdf" /> */}
+
+## TH-based vs. ML-based Forest Mask
+<FullScreenPDFViewer height='1200px' src="/forest-rs-portfolio/portfolio/02_docs_maps/03_forest_cover/s6ffschu_task07_forest_mask_comparison_map.pdf" />

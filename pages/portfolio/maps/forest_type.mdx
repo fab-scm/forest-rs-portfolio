@@ -1,5 +1,28 @@
 import FullScreenPDFViewer from '@/components/FullScreenPDFViewer';
+import { Steps } from 'nextra/components'
 
 # Forest Type Map
 
-<FullScreenPDFViewer src="/forest-rs-portfolio/portfolio/02_docs_maps/04_forest_type/s6ffschu_task08_forest_type_map.pdf" />
+For this map a machine learning approach to classify forested areas in the Hunsrück-Hochwald National Park into **deciduous** and **coniferous** forest was applied. The workflow was implemented for both the 2021 and 2025 Sentinel-2 imagery and forms the basis for the forest loss/forest change map in the last step of the portfolio together with the annual forest masks. Here only the results for 2025 are shown.
+
+## Workflow
+<Steps>
+### Training data preparation
+   * Load Sentinel-2 predictor stack and deciduous/coniferous training polygons
+   * Extract spectral values per polygon and merge with class labels
+### Model training
+   * Setup 3-fold-leave-one-fold-out cross-validation
+   * Train two Random Forest models (`randomForest` vs `ranger`) with 500 trees
+   * Evaluate both using the Kappa and overall accuracy
+   * Select the best model based on accuracy metrics
+   * Extract and visualize variable importance of selected model
+### Prediction and mapping
+   * Predict deciduous vs. coniferous classes across the park
+   * Mask to only get prediction for forested areas using the previously created forest mask
+### Accuracy assessment
+   * Generate stratified random samples
+   * Create confusion matrix and calculate area-adjusted accuracy metrics (Olofsson et al., 2013, 2014)
+</Steps>
+
+## Map
+<FullScreenPDFViewer height='1750px' src="/forest-rs-portfolio/portfolio/02_docs_maps/04_forest_type/s6ffschu_task08_forest_type_map.pdf" />

@@ -1,19 +1,48 @@
 import FullScreenPDFViewer from "@/components/FullScreenPDFViewer";
+import { Steps } from 'nextra/components'
 
 # VI Sensitivity Analysis
 
+## **Workflow** 
+<Steps>
+### Data preparation
+   * Load Sentinel-2 spectral bands (Blue, Red, NIR, Red Edge)
+   * Aggregat 10 m bands to 20 m resolution for consistency
+   * Project datasets to EPSG:25832
+### NDVI calculation
+   * Compute NDVI = (NIR − Red) / (NIR + Red)
+   * Crop NDVI to national park boundaries and export as GeoTIFF
+### NDRE calculation
+   * Compute NDRE = (NIR − Red Edge) / (NIR + Red Edge)
+   * Crop NDRE to national park boundaries and export as GeoTIFF
+### Histogram analysis
+   * Convert rasters (NDVI, NDRE) to data frames
+   * Generate histograms with density overlays and mean reference lines
+### Sampling and Scatterplot
+   * Label sampling points based on given classes (deciduous forest, coniferous forest, dead trees, no forest)
+   * Extract NDVI and NDRE pixel values for sampling points
+   * Merg samples with class labels
+### Visualization
+   * Visualize NDVI and NDRE maps
+   * Add histograms and scatterplot to map layout
+</Steps>
+
+
+## Map
+<FullScreenPDFViewer src="/forest-rs-portfolio/portfolio/02_docs_maps/02_sensitivity/s6ffschu_task06_ndvi_ndre_sensitivity_map.pdf" />
+
+## NDVI - Interactive Web Map
 <iframe
   src="https://www.maphub.co/map/ff23d9ac-7af6-4763-b7e8-87fca44af0cb?viewer=true&embed=true"
-  width="800"
+  width="100%"
   height="600"
   title="NDVI National Park Hunsrück-Hochwald"
 ></iframe>
 
+## NDRE - Interactive Web Map
 <iframe
   src="https://www.maphub.co/map/761207b0-7bc0-4d96-8f54-0f7877f5952b?viewer=true&embed=true"
-  width="800"
+  width="100%"
   height="600"
   title="NDRE National Park Hunsrück-Hochwald"
 ></iframe>
-
-<FullScreenPDFViewer src="/forest-rs-portfolio/portfolio/02_docs_maps/02_sensitivity/s6ffschu_task06_ndvi_ndre_sensitivity_map.pdf" />

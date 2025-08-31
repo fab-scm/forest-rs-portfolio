@@ -1,5 +1,176 @@
 import FullScreenPDFViewer from '@/components/FullScreenPDFViewer';
+import { Tabs } from 'nextra/components'
 
 # Forest Canopy Height Map
+
+For this map, I processed airborne LiDAR data to create a Canopy Height Model (CHM) for the Hunsrück-Hochwald National Park. The CHM represents the height of vegetation above ground level and is calculated as the difference between a Digital Surface Model (DSM) and a Digital Elevation Model (DEM). As this was my first time working with LiDAR data, I learned a lot about the specific challenges and considerations involved in processing these data into useful raster products. Here are some key points I learned:
+
+- **Point Classification:** There is an official classification scheme for LiDAR point clouds, most commonly defined in the LAS file format standard (from the American Society for Photogrammetry and Remote Sensing – ASPRS). When you receive a `.las` or `.laz` file, each point often has a classification code attached. These codes indicate what the return represents: ground, vegetation, buildings, water, etc. For a DEM, you want only ground-classified points. If ground classification is poor (e.g., in dense tree stands), the DEM will be too high. For a DSM, you use first returns to capture the top-of-canopy or built structures.
+- **Point Density & Gaps**: The point density (points per m²) determines how detailed your DEM/DSM will be (low density → rough surfaces, small gaps, unreliable canopy tops; high density → more detail but also more noise to handle). Watch for areas with missing returns (water bodies, shadows) that may create “holes” in the surface.
+- **Interpolation Method:** Point clouds are irregular, so you need to interpolate to create raster grids. The resulting product is highly dependent on the chosen interpolation method, which itself should be chosen according to the available point cloud density. Different interpolation methods can be useful for creating a DEM or DSM, as the chosen method strongly affects edges, especially at canopy boundaries or steep terrain.
+- **Resolution (Grid Size):** The raster cell size should match the point density (too small → lots of empty pixels or noise; too large → fine details like small clearings and micro-topography are lost).  A rule of thumb: grid size ≈ 1/2 to 1/3 of average point spacing. For visualisation purposes a post-resampling can be useful (details may not be visible if the map layout is too small).
+- **Noise & Outliers:** Outliers (very high or very low points) can create spikes or pits. One should apply filters (e.g., height thresholds, statistical noise filters) before interpolation. This is especially relevant in DSMs, where bird points or atmospheric returns can stick out.
+- **Consistency with Coordinate System:** Point clouds may be in raw local coordinates or need transformation to a standard CRS (e.g., UTM, ETRS89). Always check vertical datum: is the height above ellipsoid or above sea level? Mixing them up will shift your DEM/DSM.
+- **Canopy Height Models (CHM):**  CHM = DSM – DEM.  Any small error in DEM or DSM will directly propagate to CHM (e.g., DEM too high → CHM underestimated). That’s why good ground classification and careful interpolation are critical.
+- **Data usability:** Data usually has a certain acquisition date. Therefore DEM, DSM and CHM are only as current as the survey date. In this project, LiDAR mainly gave me structure—a baseline of “how tall” and “how continuous” the canopy was at this data—rather than any additional information for change detection.
+
+## Processing Script
+
+For the processing of the point cloud data I used the Point Data Abstraction Library (PDAL, 2025). To give a small insight into the processing steps here the bash script starting the parallel processing to DEM and DSM from the raw LiDAR data is shown. Several further steps were necessary to create the final CHM, which are not shown here for brevity.
+
+<details>
+  <summary>Parallel LiDAR processing with PDAL</summary>
+  <br/>
+  <Tabs items={[`process_lidar.sh`, `dem_pipeline.json`, `dsm_pipeline.json`]}>
+    <Tabs.Tab>
+      ```bash filename="process_lidar.sh"
+      #!/bin/bash
+
+      ###############################################################################
+      # Parallel LiDAR Processing Script with Progress Bar
+      # - Generates DEM and DSM from LAZ files using PDAL
+      # - Parallel execution with live progress bar
+      # - Skips already processed files
+      ###############################################################################
+
+      INPUT_DIR="laz"
+      DEM_DIR="dem"
+      DSM_DIR="dsm"
+      PIPELINE_DIR="pipelines"
+      TEMP_DIR="tmp_progress"
+
+      mkdir -p "$DTM_DIR" "$DSM_DIR" "$TEMP_DIR"
+
+      # Filter only unprocessed files
+      FILES=()
+      for file in "$INPUT_DIR"/*.laz; do
+          name=$(basename "$file" .laz)
+          DEM_OUT="$DEM_DIR/${name}_dtm.tif"
+          DSM_OUT="$DSM_DIR/${name}_dsm.tif"
+          if [[ ! -f "$DEM_OUT" || ! -f "$DSM_OUT" ]]; then
+              FILES+=("$file")
+          fi
+      done
+
+      TOTAL=${#FILES[@]}
+      COUNT_FILE="$TEMP_DIR/progress.count"
+      echo 0 > "$COUNT_FILE"
+
+      # Function to draw progress bar
+      draw_progress_bar() {
+          while true; do
+              count=$(<"$COUNT_FILE")
+              [[ "$count" -ge "$TOTAL" ]] && break
+
+              percent=$((count * 100 / TOTAL))
+              width=40
+              filled=$((count * width / TOTAL))
+              empty=$((width - filled))
+              bar=$(printf "%${filled}s" | tr ' ' '#')
+              bar+=$(printf "%${empty}s" | tr ' ' '-')
+              printf "\rProgress: [%s] %3d%% (%d/%d files)" "$bar" "$percent" "$count" "$TOTAL"
+              sleep 0.5
+          done
+          printf "\rProgress: [########################################] 100%% (%d/%d files)\n" "$TOTAL" "$TOTAL"
+      }
+
+      # Processing function for parallel
+      process_file() {
+          file="$1"
+          name=$(basename "$file" .laz)
+
+          DEM_OUT="$DEM_DIR/${name}_dtm.tif"
+          DSM_OUT="$DSM_DIR/${name}_dsm.tif"
+
+          # Skip if outputs already exist (extra safety)
+          [[ -f "$DTM_OUT" && -f "$DSM_OUT" ]] && exit 0
+
+          DEM_PIPE=$(mktemp)
+          DSM_PIPE=$(mktemp)
+
+          sed "s|INPUT_LAZ|$file|; s|OUTPUT_DTM|$DTM_OUT|" "$PIPELINE_DIR/dem_pipeline.json" > "$DEM_PIPE"
+          sed "s|INPUT_LAZ|$file|; s|OUTPUT_DSM|$DSM_OUT|" "$PIPELINE_DIR/dsm_pipeline.json" > "$DSM_PIPE"
+
+          pdal pipeline "$DTM_PIPE" > /dev/null 2>&1
+          pdal pipeline "$DSM_PIPE" > /dev/null 2>&1
+
+          rm "$DEM_PIPE" "$DSM_PIPE"
+
+          # Atomically increment progress counter
+          {
+              flock -n 9
+              count=$(<"$COUNT_FILE")
+              echo $((count + 1)) > "$COUNT_FILE"
+          } 9>"$COUNT_FILE.lock"
+      }
+
+      export -f process_file
+      export PIPELINE_DIR DEM_DIR DSM_DIR COUNT_FILE
+
+      # Start progress bar
+      draw_progress_bar &
+      PBAR_PID=$!
+
+      # Run parallel jobs
+      if [[ $TOTAL -gt 0 ]]; then
+          parallel --jobs "$(nproc)" process_file ::: "${FILES[@]}"
+      else
+          echo "✅ All files already processed. Skipping pipeline."
+      fi
+
+      # Wait for progress bar to complete
+      wait $PBAR_PID
+
+      # Cleanup
+      rm -rf "$TEMP_DIR"
+
+      echo "✅ Processing complete."
+      ```
+    </Tabs.Tab>
+    <Tabs.Tab>
+      ```json filename="dem_pipeline.json"
+      {
+        "pipeline": [
+          "INPUT_LAZ",
+          {
+            "type": "filters.range",
+            "limits": "Classification[2:2]"
+          },
+          {
+            "type": "writers.gdal",
+            "filename": "OUTPUT_DEM",
+            "resolution": 1.0,
+            "radius": 5.0,
+            "output_type": "mean"
+          }
+        ]
+      }
+      ```
+    </Tabs.Tab>
+    <Tabs.Tab>
+      ```json filename="dsm_pipeline.json"
+      {
+        "pipeline": [
+          "INPUT_LAZ",
+          {
+            "type": "filters.range",
+            "limits": "ReturnNumber[1:1]"
+          },
+          {
+            "type": "writers.gdal",
+            "filename": "OUTPUT_DSM",
+            "resolution": 1.0,
+            "radius": 0.5,
+            "output_type": "mean"
+          }
+        ]
+      }
+      ```
+     </Tabs.Tab>
+  </Tabs>
+
+</details>
+
+## Map
 
 <FullScreenPDFViewer src="/forest-rs-portfolio/portfolio/02_docs_maps/01_chm/s6ffschu_task03_forest_canopy_height_map.pdf"/>

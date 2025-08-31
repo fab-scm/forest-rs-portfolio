@@ -1,7 +1,7 @@
 import { Fullscreen } from "lucide-react";
 import { useRef, useState, useEffect } from "react";
 
-export default function FullScreenPDFViewer({ src, height = "600px" }) {
+export default function FullScreenPDFViewer({ src, height = "620px" }) {
   const divRef = useRef(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
 

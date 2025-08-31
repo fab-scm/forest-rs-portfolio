@@ -1,1 +1,81 @@
+import { Callout } from 'nextra/components'
+ 
 # Introduction
+
+Forests are complex socio-ecological systems that provide essential ecosystem services, including carbon storage, biodiversity, raw materials, and recreational opportunities. In Central Europe, however, forests are under increasing pressure due to climate change, drought stress, and large-scale disturbances such as bark beetle outbreaks. In the german federal state Rhineland-Palatinate, in which the Hunsrück-Hochwald National Park, our study area in this course, is located, average temperatures have already risen by 1.8 °C since the pre-industrial era, accompanied by shifting precipitation regimes and more frequent extreme weather events. These changes have disproportionately impacted coniferous stands, especially Norway spruce (Picea abies), which is highly vulnerable to drought and bark beetle (Ips typographus) infestation. Over a span of five decades, more than 150 million m³ of forest in Europe have been lost due to the European spruce bark beetle (_Ips typographus_ [L.]) (Schroeder & Cocoş, 2018), making this species regarded as the leading insect pest affecting coniferous forests across the continent (Biedermann et al., 2019).
+
+The Hunsrück-Hochwald National Park, established in 2015 and spanning approximately 10,000 hectares across Rhineland-Palatinate and Saarland, provides a representative case study of these dynamics. Its mixed deciduous and coniferous forests, interspersed with heathlands and unique geological formations, are valuable both ecologically and culturally. Yet, recent years have seen widespread spruce mortality, raising questions about forest resilience, regeneration, and management strategies.
+
+Remote sensing offers powerful tools to observe, quantify, and monitor such forest dynamics at different spatial and temporal scales. Multispectral satellite systems, notably Sentinel-2 with its 10–20 m resolution and red-edge bands, enable consistent large-area coverage, making it possible to track changes in forest health, species composition, and disturbance dynamics over time (Abdullah et al., 2018; Huo et al., 2021; Huo et al., 2023). Structural data from active sensors, such as LiDAR, complement this by offering detailed information on canopy height, biomass, and stand structure (Coops et al., 2014). Together, these datasets support comprehensive assessments of forest ecosystems, ranging from early stress detection to long-term change monitoring. In this course we are integrating different approaches for forest disturbance mapping, particularly valuable for national park management, where reliable spatial information is needed to balance conservation, biodiversity protection, and adaptation to climate change.
+
+## Research Question
+
+Against this background, the central research question guiding this portfolio is:
+
+<div className="w-[80%] mx-auto my-4">
+  <Callout type="success">
+    {/* <div className="flex flex-col items-center text-center gap-2">
+      <div>🌲🌳🛰️👨🏼‍💻</div>
+  </div> */}
+    <div>
+      **How can different remote sensing approaches, including LiDAR-derived
+      canopy height, satellite-based spectral analysis, and classification
+      methods, be applied to monitor forest health and quantify forest change in
+      the Hunsrück-Hochwald National Park, and what do these methods reveal
+      about forest loss between 2021 and 2025?**
+    </div>
+  </Callout>
+</div>
+
+This question addresses both the ecological problem and the methodological challenge (robust detection and quantification).
+
+## Forest definition
+
+For this work it was aimed to define forest as all living vegetation higher than 5m. Dead standing trees are not considered as forest, contrary to the administrative forest definition. As random forest classifiers were used to create the forest/non-forest masks, as well as the forest type map, the correct outcome could only be assured via selecting correct sampling locations which match the underlying forest definition. No post-processing via canopy height was performed as no canopy height models for the satellite aqusition dates were available.
+
+## Objectives
+
+The portfolio is guided by several overarching objectives that reflect the key aims of forest remote sensing applications in monitoring ecological change:
+
+- **Quantify Forest Change:** Assess the extent of forest loss and disturbance within Hunsrück-Hochwald National Park during a self-set study period, with a focus on Norway spruce decline.
+- **Evaluate Remote Sensing Approaches:** Explore and apply different remote sensing methods to detect and monitor forest change.
+- **Produce Thematic Maps:** Develop digital maps that provide clear and spatially explicit representations of forest structure, forest types, and forest change. These maps serve as the primary tools for analyzing and communicating observed patterns.
+- **Utilize Open Data Sources:** Demonstrate the potential of freely available satellite and geospatial data for forest monitoring, highlighting the accessibility and reproducibility of open-source approaches.
+- **Communicate Results:** Present findings in a clear and structured manner that is useful both for scientific analysis and for practical forest management. This includes integrating maps, summaries, and visualizations into a coherent portfolio that can inform decision-making and conservation planning.
+- **Capacity Building and Skill Development:** Strengthen technical competencies in satellite image and LiDAR processing, as well as machine learning-based classification.
+
+## Scope and Limitations
+
+**Geographic Scope:** The study is confined to the Hunsrück-Hochwald National Park, which straddles the federal states of Rhineland-Palatinate and Saarland in western Germany. The park covers roughly 100 km² (approximately 10,000 hectares) of upland terrain, predominantly mixed forests with significant Norway spruce stands. As the only national park in these states, it provides a representative landscape of Central European temperate forests. The analysis specifically zeroes in on areas within the park boundaries, ensuring that results pertain to the managed conservation area. Local topography (plateaus and hills) and land cover (dense conifer patches, deciduous woodlands, and some open heath or meadow areas) form the environmental context for interpretation. No areas outside the park are included, which means any detected changes are those occurring inside Hunsrück-Hochwald and directly relevant to its management.
+
+**Temporal Scope:** The forest change map uses two points in time (summer 2021 versus summer 2025) to identify changes. Focusing on an bi-annual change has limitations: it may not capture longer-term trends or post-2021 damage with recovery in the given time period, and it assumes that the major detectable changes occurred within this period. Seasonal timing is also critical: images are chosen from the same season for the two years to avoid phenological differences. By limiting the temporal scope, the study provides a snapshot of recent damage but cannot address questions about longer recovery or multi-year outbreak progression.
+
+**Data and Methodological Limitations:** Several constraints are inherent in the chosen data and methods. First, the spatial resolution of Sentinel-2 (10 m for key bands) means that fine-scale disturbance (such as single-tree attacks or narrow shelterbelts) might not be resolved. Small gaps or scattered tree mortality may go undetected if they do not substantially affect a 10 m pixel’s reflectance. This pixel size also poses challenges in mixed pixels at forest edges or small clearings. LiDAR data, on the other hand, typically offer higher resolution (point clouds or 1 m CHM), but available LiDAR surveys might be dated. If the LiDAR dataset predates the bark beetle outbreak (for instance, a survey from a few years earlier), the CHM represents a baseline condition and cannot show new gaps formed after the survey. Thus, LiDAR is used here primarily for static structure information and not for change over the 2021–2025 interval. Moreover, the portfolio relies on cloud-free optical imagery for the two target dates as cloud cover could limit usable Sentinel-2 data. Sentinel-2 images used are L2A data which assure atmospheric, terrain and adjacency correction with the Sen2Cor correction framework (Main-Knorn et al, 2017). On top a scene classification is provided which can be used to mask non-usable pixels due to clouds or cloud shadows. Nevertheless, radiometric differences between dates due to solar and viewing angle (BRDF correction) are another limitation, which is not adressed in the correction framework and must be accepted here.
+
+There are also classification and validation limitations. Creating a “forest vs non-forest” mask or a “forest type” map from imagery can be prone to classification errors: for example, areas of dead trees might be misclassified as forest if their vegetative signal is still quite high, even though standing dead wood is non-forest according to our forest definition used here. Furthermore, distinguishing forest types (deciduous vs coniferous) from multispectral data is challenging, as different species can have similar spectral signatures especially when foliage condition is poor. Ground truth data in the park are limited – there may not be extensive field plots due to the portfolio’s reliance on open data – so training and validation data collection is performed by a combination of visual interpretation of dated high-resolution aerial imagery, park inventory and forest type maps. This means accuracy assessments have uncertainty and may not fully represent on-the-ground reality.
+
+Finally, the analysis is constrained to detecting loss of forest (defoliation or removal). It does not deeply assess subtle early stress in still-green trees which would require multi-temporal spectral analysis beyond a simple two-date comparison, or advanced indices/thermal data as noted by Gerhards et al. (2019) in broader contexts. Nor does it capture regeneration or growth, except incidentally if some small areas show significant regreening in the given time period. Despite these limitations, the scope is appropriate to achieve a clear outcome: mapping the core areas of forest loss in the park over the chosen time period and demonstrating an open-data remote sensing workflow under real-world constraints.
+
+## Methodology Overview
+
+A multi-sensor, multi-method approach was applied:
+
+- **LiDAR Processing**: Airborne LiDAR point clouds (LAZ format) were processed into DEM, DSM, and Canopy Height Models (CHM). The CHM formed the basis for the **Forest Canopy Height Map**.
+- **Vegetation Indices**: Two different indices (NDVI and NDRE) were calculated from Sentinel-2 Level-2A and compared in a **Sensitivity Analysis**.
+- **Image Classification**: Supervised Random Forest classification was used to derive the **Forest/Non-Forest Map** and the **Forest Type Map**.
+- **Change Detection**: Simple forest mask subtraction resulting in a **Forest Loss/Forest Change Map**.
+- **Validation**: Stratified random sampling and accuracy assessment metrics (producer’s, user’s, and overall accuracy) were computed following Olofsson et al. (2014).
+
+This workflow mirrors the progressive skill-building in the course: from data preprocessing to _advanced_ classification and change detection.
+
+## Organization of the Portfolio
+
+The portfolio is organized around five main outputs, each representing a step in the methodological chain:
+
+1. **Forest Canopy Height Map** – Establishing the structural baseline using LiDAR.
+2. **NDVI vs. NDRE Sensitivity Analysis** – Testing and comparing spectral indices for stress detection.
+3. **Forest/Non-Forest Map with Validation** – Mapping the extent of forest cover for June 2025.
+4. **Forest Type Map with Validation** – Differentiating forest composition and types.
+5. **Forest Loss/Forest Change Map** – Quantifying forest decline between 2021–2025.
+
+Together, these outputs form a coherent sequence: canopy structure establishes the baseline; vegetation indices measure stress sensitivity; classifications map extent and types; and change detection quantifies temporal dynamics. The integration of all results provides a holistic perspective on forest disturbance monitoring in the Hunsrück-Hochwald National Park.
